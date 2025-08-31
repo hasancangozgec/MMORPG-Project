@@ -1,29 +1,25 @@
 using UnityEngine;
-using TMPro; // TextMeshPro kütüphanesini ekliyoruz
+using TMPro;
 
 public class UIManager : MonoBehaviour
 {
-    [Header("Panels")]
+    [Header("Paneller")]
     public GameObject loginPanel;
     public GameObject registerPanel;
 
-    [Header("Login Fields")]
-    public TMP_InputField loginEmailInput;
-    public TMP_InputField loginPasswordInput;
+    [Header("Manager Referanslarý")]
+    public DatabaseManager databaseManager;
 
-    [Header("Register Fields")]
+    [Header("UI Elemanlarý")]
+    public TMP_InputField registerUsernameInput; // Yeni eklendi
     public TMP_InputField registerEmailInput;
     public TMP_InputField registerPhoneInput;
     public TMP_InputField registerPasswordInput;
-    public TMP_InputField registerPasswordConfirmInput;
-
-    // DatabaseManager script'ine referans
-    private DatabaseManager databaseManager;
+    public TMP_InputField loginIdentifierInput; // Adý deðiþti
+    public TMP_InputField loginPasswordInput;
 
     void Start()
     {
-        // Managers objesindeki DatabaseManager script'ini bul ve ata
-        databaseManager = FindObjectOfType<DatabaseManager>();
         ShowLoginPanel();
     }
 
@@ -39,36 +35,15 @@ public class UIManager : MonoBehaviour
         registerPanel.SetActive(true);
     }
 
-    // Kayýt Ol butonuna týklandýðýnda çalýþacak
-    public void OnRegisterButtonClicked()
-    {
-        // Alanlarýn boþ olup olmadýðýný kontrol et
-        if (registerEmailInput.text == "" || registerPhoneInput.text == "" || registerPasswordInput.text == "" || registerPasswordConfirmInput.text == "")
-        {
-            Debug.LogWarning("Lütfen tüm alanlarý doldurun.");
-            return;
-        }
-
-        // Þifrelerin eþleþip eþleþmediðini kontrol et
-        if (registerPasswordInput.text != registerPasswordConfirmInput.text)
-        {
-            Debug.LogWarning("Þifreler eþleþmiyor.");
-            return;
-        }
-
-        // Her þey yolundaysa, DatabaseManager'daki kayýt fonksiyonunu çalýþtýr
-        StartCoroutine(databaseManager.RegisterUser(registerEmailInput.text, registerPhoneInput.text, registerPasswordInput.text));
-    }
-
-    // Giriþ Yap butonuna týklandýðýnda çalýþacak
     public void OnLoginButtonClicked()
     {
-        if (loginEmailInput.text == "" || loginPasswordInput.text == "")
-        {
-            Debug.LogWarning("Lütfen tüm alanlarý doldurun.");
-            return;
-        }
+        // Gerekli kontroller yapýlabilir (alanlar boþ mu vb.)
+        StartCoroutine(databaseManager.LoginUser(loginIdentifierInput.text, loginPasswordInput.text));
+    }
 
-        StartCoroutine(databaseManager.LoginUser(loginEmailInput.text, loginPasswordInput.text));
+    public void OnRegisterButtonClicked()
+    {
+        // Gerekli kontroller yapýlabilir
+        StartCoroutine(databaseManager.RegisterUser(registerUsernameInput.text, registerEmailInput.text, registerPhoneInput.text, registerPasswordInput.text));
     }
 }
